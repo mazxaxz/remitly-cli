@@ -23,8 +23,8 @@ A subcommand for deploying specified version of
 the application to the remote cloud.
 
 Subcommand uses:
-	'REMITLY_CONTEXT'             environment variable (optional, default: default)
-	'$HOME/.remitly/contexts.yml' file defining usable contexts (required)
+	'REMITLY_CONTEXT' - environment variable (optional, default: default)
+	'./contexts.yml | $HOME/.remitly/contexts.yml' - file defining usable contexts (required)
 `,
 		Args: args,
 		Run:  c.run,

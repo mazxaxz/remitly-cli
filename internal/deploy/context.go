@@ -10,6 +10,7 @@ import (
 func loadContexts() {
 	viper.SetConfigName("contexts")
 	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/.remitly/")
 
 	if err := viper.ReadInConfig(); err != nil {
