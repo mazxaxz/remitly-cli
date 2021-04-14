@@ -24,7 +24,7 @@ the application to the remote cloud.
 
 Subcommand uses:
 	'REMITLY_CONTEXT' - environment variable (optional, default: default)
-	'./contexts.yml | $HOME/.remitly/contexts.yml' - file defining usable contexts (required)
+	'./contexts.yml | $HOME/.remitly/contexts.yml' - created by 'remitly contexts --init' (required)
 `,
 		Args: args,
 		Run:  c.run,

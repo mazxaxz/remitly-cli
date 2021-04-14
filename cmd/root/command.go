@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	cliContext "github.com/mazxaxz/remitly-cli/internal/context"
 	"github.com/mazxaxz/remitly-cli/internal/deploy"
 )
 
@@ -17,6 +18,7 @@ func Execute(ctx context.Context) {
 		Long:  "A simple exec created for recruitment purposes",
 	}
 	// subcommands
+	cmd.AddCommand(cliContext.NewCmd())
 	cmd.AddCommand(deploy.NewCmd())
 
 	if err := cmd.ExecuteContext(ctx); err != nil {
