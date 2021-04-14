@@ -9,7 +9,7 @@ import (
 
 type cmdContext struct {
 	app, version string
-	replicas     int32
+	count        int32
 	timeout      int32
 }
 
@@ -35,7 +35,7 @@ Subcommand uses:
 	cmd.Flags().StringVarP(&c.version, "version", "", "", "The version of the application to to deploy (required)")
 	cmd.MarkFlagRequired("version")
 
-	cmd.Flags().Int32VarP(&c.replicas, "replica-count", "", 1, "The number of instances of this version of the app to deploy (optional, default: 1)")
+	cmd.Flags().Int32Var(&c.count, "count", 0, "The number of instances of this version of the app to deploy (optional, default: 0 - same as previous version)")
 	cmd.Flags().Int32VarP(&c.timeout, "wait", "w", 360, "The time in seconds to wait for successful deployment (optional, default: 360)")
 
 	return &cmd

@@ -1,5 +1,0 @@
-contexts:
-  - name: default
-    http:
-      url: https://XXXX/
-      username: XXXX
