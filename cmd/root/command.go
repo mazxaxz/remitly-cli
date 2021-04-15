@@ -2,9 +2,8 @@ package root
 
 import (
 	"context"
-	"fmt"
-	"os"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	cliContext "github.com/mazxaxz/remitly-cli/internal/context"
@@ -22,7 +21,7 @@ func Execute(ctx context.Context) {
 	cmd.AddCommand(deploy.NewCmd())
 
 	if err := cmd.ExecuteContext(ctx); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.WithError(err).Errorln("a runtime error has occurred")
+		log.Exit(1)
 	}
 }
