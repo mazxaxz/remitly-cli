@@ -2,11 +2,12 @@ package root
 
 import (
 	"context"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	cliContext "github.com/mazxaxz/remitly-cli/internal/context"
+	contextCmd "github.com/mazxaxz/remitly-cli/internal/context"
 	"github.com/mazxaxz/remitly-cli/internal/deploy"
 )
 
@@ -17,8 +18,14 @@ func Execute(ctx context.Context) {
 		Long:  "A simple exec created for recruitment purposes",
 	}
 	// subcommands
-	cmd.AddCommand(cliContext.NewCmd())
+	cmd.AddCommand(contextCmd.NewCmd())
 	cmd.AddCommand(deploy.NewCmd())
+
+	now := time.Now()
+	defer func() {
+		took := time.Since(now)
+		log.WithField("milliseconds", took.Milliseconds()).Info("command finished")
+	}()
 
 	if err := cmd.ExecuteContext(ctx); err != nil {
 		log.WithError(err).Errorln("a runtime error has occurred")

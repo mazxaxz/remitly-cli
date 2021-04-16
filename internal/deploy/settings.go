@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func loadContexts(_ *cobra.Command, _ []string) error {
+func loadSettings(_ *cobra.Command, _ []string) error {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("REMITLY")
 	viper.AllowEmptyEnv(true)
@@ -20,19 +21,19 @@ func loadContexts(_ *cobra.Command, _ []string) error {
 		log.WithError(err).Error("could not bind REMITLY_PATH environment variable, make sure it is set")
 		return err
 	}
-	if err := viper.BindEnv("CONTEXT"); err != nil {
-		log.WithError(err).Error("could not bind REMITLY_CONTEXT environment variable, make sure it is set")
+	if err := viper.BindEnv("PROFILE"); err != nil {
+		log.WithError(err).Error("could not bind REMITLY_PROFILE environment variable, make sure it is set")
 		return err
 	}
 
 	path := viper.GetString("PATH")
 	if path == "" {
 		log.Info("make sure REMITLY_PATH is set")
-		return ErrPathVariableNotFound
+		return ErrPathVariableNotSet
 	}
 
 	var fileName string
-	err := filepath.Walk(path, func(path string, f fs.FileInfo, err error) error {
+	err := filepath.Walk(os.ExpandEnv(path), func(path string, f fs.FileInfo, err error) error {
 		if err != nil {
 			return errors.Wrapf(err, "an error occured while scanning directory: '%s'", path)
 		}

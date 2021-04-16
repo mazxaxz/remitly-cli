@@ -2,12 +2,10 @@ package context
 
 import (
 	"fmt"
-	"os"
-	"strings"
-
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 const (
@@ -18,7 +16,7 @@ const (
 contexts:
   - name: default
     http:
-      url: https://XXXX/
+      url: http://XXXX/
       username: XXXX
 `
 )
@@ -54,7 +52,7 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 }
 
 func touch(path, filename, content string) error {
-	normalizedPath := strings.Replace(path, "$HOME", os.Getenv("HOME"), -1)
+	normalizedPath := os.ExpandEnv(path)
 	fullFilePath := fmt.Sprintf("%s/%s.yml", normalizedPath, filename)
 
 	if _, err := os.Stat(normalizedPath); err != nil {

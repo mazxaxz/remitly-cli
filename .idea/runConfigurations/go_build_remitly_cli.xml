@@ -2,7 +2,11 @@
   <configuration default="false" name="go build remitly-cli" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="remitly-cli" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="deploy -a app --revision test" />
+    <parameters value="deploy -a app --revision test --replica-count 1" />
+    <envs>
+      <env name="REMITLY_PATH" value="$HOME/.remitly" />
+      <env name="REMITLY_PROFILE" value="default" />
+    </envs>
     <kind value="PACKAGE" />
     <filePath value="$PROJECT_DIR$" />
     <package value="github.com/mazxaxz/remitly-cli/cmd" />
