@@ -12,6 +12,14 @@ import (
 )
 
 type Clienter interface {
+	// CreateLoadBalancer creates load balancer with given name
+	CreateLoadBalancer(ctx context.Context, name string) (LoadBalancer, error)
+	// GetInstances returns array of instances by load balancer name
+	GetInstances(ctx context.Context, lbName string) ([]Instance, error)
+	// CreateInstance within load balancer scope
+	CreateInstance(ctx context.Context, lbName, version string) (Instance, error)
+	// DeleteInstance deletes instance by ID within load balancer scope
+	DeleteInstance(ctx context.Context, lbName, ID string) error
 }
 
 type clientContext struct {
@@ -33,6 +41,22 @@ func NewClient(cloudHost *url.URL, username string) Clienter {
 		},
 	}
 	return &c
+}
+
+func (c *clientContext) CreateLoadBalancer(ctx context.Context, name string) (LoadBalancer, error) {
+	return LoadBalancer{}, nil
+}
+
+func (c *clientContext) GetInstances(ctx context.Context, lbName string) ([]Instance, error) {
+	return nil, nil
+}
+
+func (c *clientContext) CreateInstance(ctx context.Context, lbName, version string) (Instance, error) {
+	return Instance{}, nil
+}
+
+func (c *clientContext) DeleteInstance(ctx context.Context, lbName, ID string) error {
+	return nil
 }
 
 func (c *clientContext) do(ctx context.Context, method, path string, body interface{}, args ...interface{}) (*http.Response, error) {
