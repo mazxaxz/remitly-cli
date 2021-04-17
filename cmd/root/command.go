@@ -7,8 +7,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	contextCmd "github.com/mazxaxz/remitly-cli/internal/context"
 	"github.com/mazxaxz/remitly-cli/internal/deploy"
+	"github.com/mazxaxz/remitly-cli/internal/initialize"
 )
 
 func Execute(ctx context.Context) {
@@ -18,7 +18,7 @@ func Execute(ctx context.Context) {
 		Long:  "A simple exec created for recruitment purposes",
 	}
 	// subcommands
-	cmd.AddCommand(contextCmd.NewCmd())
+	cmd.AddCommand(initialize.NewCmd())
 	cmd.AddCommand(deploy.NewCmd())
 
 	now := time.Now()

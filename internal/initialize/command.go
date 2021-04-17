@@ -1,53 +1,60 @@
-package context
+package initialize
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 const (
 	version = "1.0.0"
 
-	contextsPath       = "$HOME/.remitly"
-	contextsDefaultYml = `
+	contextsPath     = "$HOME/.remitly"
+	contextsTemplate = `
 contexts:
-  - name: default
+  - name: %s
     http:
-      url: http://XXXX/
-      username: XXXX
+      url: %s
+      username: %s
 `
 )
 
 type cmdContext struct {
-	init bool
+	name     string
+	url      string
+	username string
 }
 
 func NewCmd() *cobra.Command {
 	var c cmdContext
 	cmd := cobra.Command{
-		Use:     "context",
+		Use:     "initialize",
 		Version: version,
 		Short:   "A subcommand for managing contexts",
 		RunE:    c.run,
 	}
 
-	cmd.Flags().BoolVar(&c.init, "init", false, "Initializes new context file")
+	cmd.Flags().StringVarP(&c.name, "name", "n", "default", "profile name of initialized context")
+	cmd.Flags().StringVar(&c.url, "url", "default", "url for initialized context")
+	cmd.Flags().StringVar(&c.username, "username", "default", "username for initialized context")
 
 	return &cmd
 }
 
 func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
-	if c.init {
-		if err := touch(contextsPath, "contexts", contextsDefaultYml); err != nil {
-			log.WithContext(ctx).WithError(err).Error("could not initialize contexts")
-			return err
-		}
-		log.WithContext(ctx).Infof("contexts were intialized at '%s'", contextsPath)
+	if c.name == "" || c.url == "" || c.username == "" {
+		return ErrFlagsNotSpecified
 	}
+	yml := fmt.Sprintf(contextsTemplate, c.name, c.url, c.username)
+	if err := touch(contextsPath, "contexts", yml); err != nil {
+		log.WithContext(ctx).WithError(err).Error("could not initialize contexts")
+		return err
+	}
+	log.WithContext(ctx).Infof("contexts were intialized at '%s'", contextsPath)
 	return nil
 }
 
