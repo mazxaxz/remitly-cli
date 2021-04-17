@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go test remitly-cli" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+    <module name="remitly-cli" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-i" />
+    <framework value="gotest" />
+    <kind value="DIRECTORY" />
+    <package value="github.com/mazxaxz/remitly-cli" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>

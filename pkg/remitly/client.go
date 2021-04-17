@@ -40,6 +40,7 @@ type clientContext struct {
 	hc               http.Client
 }
 
+// NewClient returns new instance of Clienter
 func NewClient(cloudHost *url.URL, username string) Clienter {
 	c := clientContext{
 		scheme:   cloudHost.Scheme,

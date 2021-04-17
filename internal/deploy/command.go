@@ -108,7 +108,10 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 		if !c.count.Specified {
 			replicas = len(original.instances)
 		}
-		// TODO same version deployed
+		// safety condition, this feature is not implemented
+		if original.instances[0].Version == c.revision {
+			return ErrVersionAlreadyDeployed
+		}
 	}
 
 	rb, err := deploy(timeout, remitlyClient, loadBalancerName, c.revision, replicas)
