@@ -41,10 +41,10 @@ func (c *cmdContext) orchestrate(ctx context.Context, rc remitly.Clienter, lbNam
 				return
 			}
 
-			previous := make([]string, 0)
+			original := make([]string, 0)
 			for _, instance := range ss.instances {
 				if instance.Version != c.revision {
-					previous = append(previous, instance.ID)
+					original = append(original, instance.ID)
 					continue
 				}
 
@@ -56,7 +56,15 @@ func (c *cmdContext) orchestrate(ctx context.Context, rc remitly.Clienter, lbNam
 					return
 				case remitly.StateHealthy:
 					var ID string
-					ID, previous = previous[0], previous[1:]
+					if len(original) == 0 {
+						result <- CodeSuccess
+						return
+					} else if len(original) == 1 {
+						ID, original = original[0], []string{}
+					} else {
+						ID, original = original[0], original[1:]
+					}
+
 					if err := rc.DeleteInstance(ctx, lbName, ID); err != nil {
 						result <- CodeError
 						return

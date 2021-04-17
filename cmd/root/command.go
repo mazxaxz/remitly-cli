@@ -24,7 +24,7 @@ func Execute(ctx context.Context) {
 	now := time.Now()
 	defer func() {
 		took := time.Since(now)
-		log.WithField("milliseconds", took.Milliseconds()).Info("command finished")
+		log.WithField("milliseconds", took.Milliseconds()).Info("finished")
 	}()
 
 	if err := cmd.ExecuteContext(ctx); err != nil {

@@ -41,6 +41,7 @@ Subcommand uses:
 	'./contexts.yml | $HOME/.remitly/contexts.yml' - created by 'remitly contexts --init' (required)
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			cmd.SilenceUsage = true
 			if err := loadSettings(cmd, args); err != nil {
 				return err
 			}
@@ -107,6 +108,7 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 		if !c.count.Specified {
 			replicas = len(original.instances)
 		}
+		// TODO same version deployed
 	}
 
 	rb, err := deploy(timeout, remitlyClient, loadBalancerName, c.revision, replicas)
@@ -146,7 +148,7 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 	if err := rollback(cmd.Context(), remitlyClient, original); err != nil {
 		return errors.Wrap(err, "an error has occurred while rolling back")
 	}
-	return nil
+	return ErrFailedDeployment
 }
 
 func deploy(ctx context.Context, rc remitly.Clienter, lb, version string, replicas int) (rollback bool, _ error) {
