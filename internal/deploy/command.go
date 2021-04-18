@@ -37,8 +37,8 @@ A subcommand for deploying specified version of
 the application to the remote cloud.
 
 Subcommand uses:
-	'REMITLY_CONTEXT' - environment variable (optional, default: default)
-	'./contexts.yml | $HOME/.remitly/contexts.yml' - created by 'remitly contexts --init' (required)
+	'REMITLY_PROFILE' - environment variable (optional, default: default)
+	'REMITLY_PATH' - created by 'remitly initialize ...' (required)
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
@@ -125,7 +125,7 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 	}
 
 	result := make(chan Code)
-	go c.orchestrate(timeout, remitlyClient, loadBalancerName, replicas, result)
+	go orchestrate(timeout, remitlyClient, loadBalancerName, c.revision, replicas, result)
 	code := <-result
 
 	if code == CodeSuccess {

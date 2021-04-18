@@ -18,14 +18,14 @@ const (
 	CodeUnhealthy
 )
 
-func (c *cmdContext) orchestrate(ctx context.Context, rc remitly.Clienter, lbName string, replicas int, result chan Code) {
+func orchestrate(ctx context.Context, rc remitly.Clienter, lbName, version string, replicas int, result chan Code) {
 	for {
 		select {
 		case <-ctx.Done():
 			result <- CodeTimeout
 			return
 		default:
-			time.Sleep(5 * time.Second)
+			time.Sleep(2 * time.Second)
 			ss, err := snapshot(ctx, rc, lbName)
 			if err != nil {
 				result <- CodeError
@@ -45,24 +45,24 @@ func (c *cmdContext) orchestrate(ctx context.Context, rc remitly.Clienter, lbNam
 				return
 			}
 
+			original := make([]string, 0)
+			deployed := make([]remitly.Instance, 0)
+
 			finished := true
 			for _, instance := range ss.instances {
-				if instance.Version != c.revision {
+				if instance.Version == version {
+					deployed = append(deployed, instance)
+				} else {
+					original = append(original, instance.ID)
 					finished = false
 				}
 			}
-			if finished {
+			if finished && len(ss.instances) == replicas {
 				result <- CodeSuccess
 				return
 			}
 
-			original := make([]string, 0)
-			for _, instance := range ss.instances {
-				if instance.Version != c.revision {
-					original = append(original, instance.ID)
-					continue
-				}
-
+			for _, instance := range deployed {
 				switch instance.Status {
 				case remitly.StateProvisioning:
 					continue
