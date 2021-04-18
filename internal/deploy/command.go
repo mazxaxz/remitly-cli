@@ -114,11 +114,7 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 		}
 	}
 
-	rb, err := deploy(timeout, remitlyClient, loadBalancerName, c.revision, replicas)
-	if !rb && err != nil {
-		return err
-	}
-	if rb && err != nil {
+	if err := deploy(timeout, remitlyClient, loadBalancerName, c.revision, replicas); err != nil {
 		log.WithContext(cmd.Context()).WithError(err).Error("an error has occurred while deploying")
 		log.WithContext(cmd.Context()).WithField("snapshot", original).Info("rolling back...")
 		if err := rollback(cmd.Context(), remitlyClient, original); err != nil {
@@ -129,7 +125,7 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 	}
 
 	result := make(chan Code)
-	go c.orchestrate(timeout, remitlyClient, loadBalancerName, result)
+	go c.orchestrate(timeout, remitlyClient, loadBalancerName, replicas, result)
 	code := <-result
 
 	if code == CodeSuccess {
@@ -154,27 +150,13 @@ func (c *cmdContext) run(cmd *cobra.Command, _ []string) error {
 	return ErrFailedDeployment
 }
 
-func deploy(ctx context.Context, rc remitly.Clienter, lb, version string, replicas int) (rollback bool, _ error) {
-	if replicas <= 0 {
-		ss, err := snapshot(ctx, rc, lb)
-		if err != nil {
-			return false, err
-		}
-		for _, ins := range ss.instances {
-			if err := rc.DeleteInstance(ctx, lb, ins.ID); err != nil {
-				f := log.Fields{"name": lb, "id": ins.ID}
-				log.WithContext(ctx).WithFields(f).WithError(err).Warn("could not remove instance, skipping")
-			}
-		}
-		return false, nil
-	}
-
+func deploy(ctx context.Context, rc remitly.Clienter, lb, version string, replicas int) (err error) {
 	for i := 0; i < replicas; i++ {
 		if _, err := rc.CreateInstance(ctx, lb, version); err != nil {
-			return true, err
+			return err
 		}
 	}
-	return false, nil
+	return nil
 }
 
 func rollback(ctx context.Context, rc remitly.Clienter, original Snapshot) error {

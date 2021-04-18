@@ -11,11 +11,14 @@ import (
 	"github.com/mazxaxz/remitly-cli/internal/initialize"
 )
 
+const version = "1.0.0"
+
 func Execute(ctx context.Context) {
 	cmd := &cobra.Command{
-		Use:   "remitly [COMMAND]",
-		Short: "Command Line Interface (CLI)",
-		Long:  "A simple exec created for recruitment purposes",
+		Version: version,
+		Use:     "remitly [COMMAND]",
+		Short:   "Command Line Interface (CLI)",
+		Long:    "A simple exec created for recruitment purposes",
 	}
 	// subcommands
 	cmd.AddCommand(initialize.NewCmd())

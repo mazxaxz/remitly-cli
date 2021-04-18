@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/mazxaxz/remitly-cli/pkg/remitly"
 )
 
@@ -16,7 +18,7 @@ const (
 	CodeUnhealthy
 )
 
-func (c *cmdContext) orchestrate(ctx context.Context, rc remitly.Clienter, lbName string, result chan Code) {
+func (c *cmdContext) orchestrate(ctx context.Context, rc remitly.Clienter, lbName string, replicas int, result chan Code) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -27,6 +29,19 @@ func (c *cmdContext) orchestrate(ctx context.Context, rc remitly.Clienter, lbNam
 			ss, err := snapshot(ctx, rc, lbName)
 			if err != nil {
 				result <- CodeError
+				return
+			}
+			if replicas <= 0 {
+				for _, ins := range ss.instances {
+					if err := rc.DeleteInstance(ctx, lbName, ins.ID); err != nil {
+						f := log.Fields{"name": lbName, "id": ins.ID}
+						log.WithContext(ctx).WithFields(f).WithError(err).Warn("could not remove instance, skipping")
+
+						result <- CodeError
+						return
+					}
+				}
+				result <- CodeSuccess
 				return
 			}
 
