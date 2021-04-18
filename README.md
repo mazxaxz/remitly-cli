@@ -50,3 +50,4 @@ regenerates mocks
 - Logging can always be improved + log level steering.
 - I'm not 100% sure about the project structure, never did an CLI before.
 - Integration tests.
+- Separate rollback action flag.
